@@ -2,15 +2,14 @@ package com.movie.demo.service;
 
 import com.movie.demo.domain.Movie;
 import java.util.UUID;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Service;
 
 /**
- * Placeholder until the Movies owner provides a real implementation. Projection unit tests mock
- * {@link MovieService} and do not rely on this bean.
+ * Placeholder until the Movies owner provides a real implementation. Delete this class when a real
+ * {@link MovieService} bean is added. Projection unit tests mock {@link MovieService} and do not
+ * rely on this bean.
  */
 @Service
-@ConditionalOnMissingBean(MovieService.class)
 public class MovieServiceStub implements MovieService {
   @Override
   public Movie getById(UUID movieId) {
