@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,11 @@ public class Seat {
   @ManyToOne
   @JoinColumn(name = "room_id", nullable = false)
   private Room room;
+
+  /** UML association User --take--> Seat (inverse side). */
+  @OneToOne(mappedBy = "seat")
+  @JsonIgnore
+  private User takenBy;
 
   @ManyToMany(mappedBy = "seats")
   @JsonIgnore
