@@ -102,11 +102,103 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
     
+    // Mail dependencies
+    implementation 'jakarta.mail:jakarta.mail-api:2.1.2'
+    implementation 'jakarta.activation:jakarta.activation-api:2.1.2'
+    implementation 'com.sun.mail:jakarta.mail:2.0.1'
+    implementation 'com.sun.activation:jakarta.activation:2.0.1'
+    
+    // AWS SDK
+    implementation 'software.amazon.awssdk:ses:2.21.40'
+    implementation 'software.amazon.awssdk:core:2.21.40'
+    implementation 'software.amazon.awssdk:aws-query-protocol:2.20.26'
+    
+    // Apache Tika
+    implementation 'org.apache.tika:tika-core:2.9.1'
+    
+    // OpenAPI / Swagger
+    implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
+    implementation 'io.swagger:swagger-annotations:1.6.12'
+    
+    // Jackson
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.3'
+    
+    // AWS Lambda
+    implementation 'com.amazonaws:aws-lambda-java-core:1.2.3'
+    implementation 'com.amazonaws:aws-lambda-java-events:3.11.3'
+    implementation 'com.amazonaws.serverless:aws-serverless-java-container-springboot3:2.1.0'
+    
+    // AWS SDK v2
+    implementation 'software.amazon.awssdk:sqs:2.21.40'
+    implementation 'software.amazon.awssdk:eventbridge:2.21.40'
+    implementation 'software.amazon.awssdk.crt:aws-crt:0.28.12'
+    implementation 'software.amazon.awssdk:ses:2.21.40'
+    implementation 'software.amazon.awssdk:core:2.21.40'
+    
+    // Flyway
+    implementation 'org.flywaydb:flyway-core:9.22.3'
+    
+    // Hibernate
+    implementation 'org.hibernate.orm:hibernate-community-dialects:6.4.3.Final'
+    
+    // Jackson datatype
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.3'
+    
+    // AWS Serverless
+    implementation 'com.amazonaws.serverless:aws-serverless-java-container-springboot3:2.1.0'
+    implementation 'software.amazon.awssdk:aws-query-protocol:2.20.26'
+    
+    // AWS Lambda
+    implementation 'com.amazonaws:aws-lambda-java-core:1.2.3'
+    implementation 'com.amazonaws:aws-lambda-java-events:3.11.3'
+    
+    // AWS SDK
+    implementation 'software.amazon.awssdk:sqs:2.21.40'
+    implementation 'software.amazon.awssdk:eventbridge:2.21.40'
+    implementation 'software.amazon.awssdk.crt:aws-crt:0.28.12'
+    implementation 'software.amazon.awssdk:ses:2.21.40'
+    implementation 'software.amazon.awssdk:core:2.21.40'
+    
+    // Mail
+    implementation 'jakarta.mail:jakarta.mail-api:2.1.2'
+    implementation 'jakarta.activation:jakarta.activation-api:2.1.2'
+    implementation 'com.sun.mail:jakarta.mail:2.0.1'
+    implementation 'com.sun.activation:jakarta.activation:2.0.1'
+    
+    // Tika
+    implementation 'org.apache.tika:tika-core:2.9.1'
+    
+    // Reflections
+    implementation 'org.reflections:reflections:0.10.2'
+    
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    
+    // OpenAPI / Swagger
+    implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
+    implementation 'io.swagger:swagger-annotations:1.6.12'
+    
+    // Jackson
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.3'
+    
+    // PostgreSQL
+    implementation 'org.postgresql:postgresql:42.6.0'
+    
+    // Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    
+    // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
     testImplementation 'org.testcontainers:postgresql'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.junit-pioneer:junit-pioneer:2.2.0'
+    testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
 }
 
 tasks.withType(GenerateTask) {
