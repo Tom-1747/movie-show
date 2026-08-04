@@ -27,19 +27,19 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class Seat {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private UUID id;
 
-    @Column(nullable = false)
-    private String number;
+  @Column(nullable = false)
+  private String number;
 
-    @ManyToOne
-    @JoinColumn(name = "room_id", nullable = false)
-    private Room room;
+  @ManyToOne
+  @JoinColumn(name = "room_id", nullable = false)
+  private Room room;
 
-    @ManyToMany(mappedBy = "seats")
-    @JsonIgnore
-    @Builder.Default
-    private List<Reservation> reservations = new ArrayList<>();
+  @ManyToMany(mappedBy = "seats")
+  @JsonIgnore
+  @Builder.Default
+  private List<Reservation> reservations = new ArrayList<>();
 }

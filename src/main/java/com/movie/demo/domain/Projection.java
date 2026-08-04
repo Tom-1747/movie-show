@@ -29,26 +29,26 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class Projection {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private UUID id;
 
-    @Column(nullable = false)
-    private Instant datetime;
+  @Column(nullable = false)
+  private Instant datetime;
 
-    @Column(nullable = false)
-    private BigDecimal seatPrice;
+  @Column(nullable = false)
+  private BigDecimal seatPrice;
 
-    @ManyToOne
-    @JoinColumn(name = "movie_id", nullable = false)
-    private Movie movie;
+  @ManyToOne
+  @JoinColumn(name = "movie_id", nullable = false)
+  private Movie movie;
 
-    @ManyToOne
-    @JoinColumn(name = "room_id", nullable = false)
-    private Room room;
+  @ManyToOne
+  @JoinColumn(name = "room_id", nullable = false)
+  private Room room;
 
-    @OneToMany(mappedBy = "projection")
-    @JsonIgnore
-    @Builder.Default
-    private List<Reservation> reservations = new ArrayList<>();
+  @OneToMany(mappedBy = "projection")
+  @JsonIgnore
+  @Builder.Default
+  private List<Reservation> reservations = new ArrayList<>();
 }

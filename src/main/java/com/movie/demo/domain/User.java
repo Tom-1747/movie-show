@@ -28,34 +28,34 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private UUID id;
 
-    @Column(nullable = false)
-    private String firstName;
+  @Column(nullable = false)
+  private String firstName;
 
-    @Column(nullable = false)
-    private String lastName;
+  @Column(nullable = false)
+  private String lastName;
 
-    @Column(nullable = false)
-    private LocalDate birthdate;
+  @Column(nullable = false)
+  private LocalDate birthdate;
 
-    @Column(nullable = false, unique = true)
-    private String email;
+  @Column(nullable = false, unique = true)
+  private String email;
 
-    @Column(nullable = false)
-    private String password;
+  @Column(nullable = false)
+  private String password;
 
-    @Column(nullable = false)
-    private String phone;
+  @Column(nullable = false)
+  private String phone;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private UserRole role;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private UserRole role;
 
-    @OneToMany(mappedBy = "user")
-    @JsonIgnore
-    @Builder.Default
-    private List<Reservation> reservations = new ArrayList<>();
+  @OneToMany(mappedBy = "user")
+  @JsonIgnore
+  @Builder.Default
+  private List<Reservation> reservations = new ArrayList<>();
 }

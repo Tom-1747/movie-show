@@ -31,28 +31,28 @@ import org.hibernate.annotations.SQLRestriction;
 @AllArgsConstructor
 @Builder
 public class Movie {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private UUID id;
 
-    @Column(nullable = false)
-    private String title;
+  @Column(nullable = false)
+  private String title;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Genre genre;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private Genre genre;
 
-    @Column(length = 2000)
-    private String description;
+  @Column(length = 2000)
+  private String description;
 
-    @Column(name = "duration_seconds", nullable = false)
-    private Duration duration;
+  @Column(name = "duration_seconds", nullable = false)
+  private Duration duration;
 
-    @Column(name = "deleted_at")
-    private Instant deletedAt;
+  @Column(name = "deleted_at")
+  private Instant deletedAt;
 
-    @OneToMany(mappedBy = "movie")
-    @JsonIgnore
-    @Builder.Default
-    private List<Projection> projections = new ArrayList<>();
+  @OneToMany(mappedBy = "movie")
+  @JsonIgnore
+  @Builder.Default
+  private List<Projection> projections = new ArrayList<>();
 }

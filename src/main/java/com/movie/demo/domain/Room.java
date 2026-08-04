@@ -29,26 +29,26 @@ import org.hibernate.annotations.SQLRestriction;
 @AllArgsConstructor
 @Builder
 public class Room {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private UUID id;
 
-    @Column(nullable = false)
-    private String number;
+  @Column(nullable = false)
+  private String number;
 
-    @Column(nullable = false)
-    private int capacity;
+  @Column(nullable = false)
+  private int capacity;
 
-    @Column(name = "deleted_at")
-    private Instant deletedAt;
+  @Column(name = "deleted_at")
+  private Instant deletedAt;
 
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    @JsonIgnore
-    private List<Seat> seats = new ArrayList<>();
+  @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+  @Builder.Default
+  @JsonIgnore
+  private List<Seat> seats = new ArrayList<>();
 
-    @OneToMany(mappedBy = "room")
-    @Builder.Default
-    @JsonIgnore
-    private List<Projection> projections = new ArrayList<>();
+  @OneToMany(mappedBy = "room")
+  @Builder.Default
+  @JsonIgnore
+  private List<Projection> projections = new ArrayList<>();
 }
