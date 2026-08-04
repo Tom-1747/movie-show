@@ -17,50 +17,50 @@ import org.springframework.web.server.ResponseStatusException;
 @AllArgsConstructor
 public class MovieService {
 
-    private final MovieRepository movieRepository;
+  private final MovieRepository movieRepository;
 
-    public List<MovieDto> getMovies() {
-        return movieRepository.findAll().stream().map(this::toDto).toList();
+  public List<MovieDto> getMovies() {
+    return movieRepository.findAll().stream().map(this::toDto).toList();
+  }
+
+  public MovieDto getMovie(UUID movieId) {
+    return movieRepository
+        .findById(movieId)
+        .map(this::toDto)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+  }
+
+  public MovieDto createOrUpdateMovie(UUID movieId, MovieInputDto input) {
+    var entity =
+        movieId != null ? movieRepository.findById(movieId).orElseGet(Movie::new) : new Movie();
+
+    entity.setTitle(input.getTitle());
+    if (input.getGenre() != null) {
+      entity.setGenre(Genre.valueOf(input.getGenre()));
     }
+    entity.setDescription(input.getDescription());
+    entity.setDuration(input.getDuration());
 
-    public MovieDto getMovie(UUID movieId) {
-        return movieRepository
-                .findById(movieId)
-                .map(this::toDto)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    }
+    var saved = movieRepository.save(entity);
 
-    public MovieDto createOrUpdateMovie(UUID movieId, MovieInputDto input) {
-        var entity =
-                movieId != null ? movieRepository.findById(movieId).orElseGet(Movie::new) : new Movie();
+    return toDto(saved);
+  }
 
-        entity.setTitle(input.getTitle());
-        if (input.getGenre() != null) {
-            entity.setGenre(Genre.valueOf(input.getGenre()));
-        }
-        entity.setDescription(input.getDescription());
-        entity.setDuration(input.getDuration());
+  private MovieDto toDto(Movie entity) {
+    return new MovieDto(
+        entity.getId(),
+        entity.getTitle(),
+        entity.getGenre(),
+        entity.getDescription(),
+        entity.getDuration());
+  }
 
-        var saved = movieRepository.save(entity);
-
-        return toDto(saved);
-    }
-
-    private MovieDto toDto(Movie entity) {
-        return new MovieDto(
-                entity.getId(),
-                entity.getTitle(),
-                entity.getGenre(),
-                entity.getDescription(),
-                entity.getDuration());
-    }
-
-    public void deleteMovie(UUID movieId) {
-        var entity =
-                movieRepository
-                        .findById(movieId)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        entity.setDeletedAt(Instant.now());
-        movieRepository.save(entity);
-    }
+  public void deleteMovie(UUID movieId) {
+    var entity =
+        movieRepository
+            .findById(movieId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    entity.setDeletedAt(Instant.now());
+    movieRepository.save(entity);
+  }
 }
