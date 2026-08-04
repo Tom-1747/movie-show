@@ -1,0 +1,640 @@
+openapi: 3.0.3
+info:
+  title: Cinema Booking API
+  version: 1.0.0
+servers:
+  - url: https://api.cinema.example.com/v1
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Movies
+  - name: Projections
+  - name: Rooms
+  - name: Seats
+  - name: Reservations
+  - name: Users
+
+paths:
+  /movies:
+    get:
+      tags: [Movies]
+      summary: Lister les films
+      responses:
+        "200":
+          description: OK - tous rôles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Movie"
+    put:
+      tags: [Movies]
+      summary: Créer/modifier un film
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MovieInput"
+      responses:
+        "200":
+          description: MANAGER
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Movie"
+        "403":
+          description: CLIENT, EMPLOYEE
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /movies/{movieId}:
+    parameters:
+      - $ref: "#/components/parameters/MovieId"
+    get:
+      tags: [Movies]
+      summary: Récupérer un film
+      responses:
+        "200":
+          description: OK - tous rôles
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Movie"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [Movies]
+      summary: Supprimer un film
+      responses:
+        "204":
+          description: MANAGER
+        "403":
+          description: CLIENT, EMPLOYEE
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projections:
+    get:
+      tags: [Projections]
+      summary: Lister les projections
+      security: []
+      responses:
+        "200":
+          description: OK - tous
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Projection"
+    put:
+      tags: [Projections]
+      summary: Créer/modifier une projection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectionInput"
+      responses:
+        "200":
+          description: MANAGER
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Projection"
+        "403":
+          description: CLIENT, EMPLOYEE
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /projections/{projectionId}:
+    parameters:
+      - $ref: "#/components/parameters/ProjectionId"
+    get:
+      tags: [Projections]
+      summary: Récupérer une projection
+      security: []
+      responses:
+        "200":
+          description: OK - tous
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Projection"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [Projections]
+      summary: Supprimer une projection
+      responses:
+        "204":
+          description: MANAGER
+        "403":
+          description: CLIENT, EMPLOYEE
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projections/{projectionId}/seats:
+    parameters:
+      - $ref: "#/components/parameters/ProjectionId"
+    get:
+      tags: [Projections, Seats]
+      summary: Sièges d'une projection
+      responses:
+        "200":
+          description: OK - tous rôles authentifiés
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SeatAvailability"
+
+  /rooms:
+    get:
+      tags: [Rooms]
+      summary: Lister les salles
+      responses:
+        "200":
+          description: EMPLOYEE, MANAGER
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Room"
+        "403":
+          description: CLIENT
+    put:
+      tags: [Rooms]
+      summary: Créer/modifier une salle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoomInput"
+      responses:
+        "200":
+          description: MANAGER
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Room"
+        "403":
+          description: CLIENT, EMPLOYEE
+
+  /rooms/{roomId}:
+    parameters:
+      - $ref: "#/components/parameters/RoomId"
+    get:
+      tags: [Rooms]
+      summary: Récupérer une salle
+      responses:
+        "200":
+          description: EMPLOYEE, MANAGER
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Room"
+        "403":
+          description: CLIENT
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [Rooms]
+      summary: Supprimer une salle
+      responses:
+        "204":
+          description: MANAGER
+        "403":
+          description: CLIENT, EMPLOYEE
+
+  /rooms/{roomId}/seats:
+    parameters:
+      - $ref: "#/components/parameters/RoomId"
+    get:
+      tags: [Seats]
+      summary: Sièges d'une salle
+      responses:
+        "200":
+          description: EMPLOYEE, MANAGER
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Seat"
+        "403":
+          description: CLIENT
+    put:
+      tags: [Seats]
+      summary: Créer/modifier un siège
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SeatInput"
+      responses:
+        "200":
+          description: MANAGER
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Seat"
+        "403":
+          description: CLIENT, EMPLOYEE
+
+  /reservations:
+    get:
+      tags: [Reservations]
+      summary: Lister les réservations
+      responses:
+        "200":
+          description: EMPLOYEE, MANAGER
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Reservation"
+        "403":
+          description: CLIENT
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      tags: [Reservations]
+      summary: Créer une réservation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReservationInput"
+      responses:
+        "201":
+          description: CLIENT, EMPLOYEE, MANAGER
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Reservation"
+        "409":
+          description: Siège déjà réservé
+
+  /reservations/{reservationId}:
+    parameters:
+      - $ref: "#/components/parameters/ReservationId"
+    get:
+      tags: [Reservations]
+      summary: Récupérer une réservation
+      responses:
+        "200":
+          description: Propriétaire CLIENT, EMPLOYEE, MANAGER
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Reservation"
+        "403":
+          description: CLIENT non propriétaire
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      tags: [Reservations]
+      summary: Modifier une réservation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReservationInput"
+      responses:
+        "200":
+          description: EMPLOYEE, MANAGER
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Reservation"
+        "403":
+          description: CLIENT
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [Reservations]
+      summary: Annuler une réservation
+      responses:
+        "204":
+          description: Propriétaire CLIENT, EMPLOYEE, MANAGER
+        "403":
+          description: CLIENT non propriétaire
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /users/me/reservations:
+    get:
+      tags: [Users, Reservations]
+      summary: Réservations de l'utilisateur connecté
+      responses:
+        "200":
+          description: OK - tous rôles authentifiés
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Reservation"
+
+  /users:
+    get:
+      tags: [Users]
+      summary: Lister les utilisateurs
+      responses:
+        "200":
+          description: MANAGER
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "403":
+          description: CLIENT, EMPLOYEE
+
+  /users/{userId}:
+    parameters:
+      - $ref: "#/components/parameters/UserId"
+    get:
+      tags: [Users]
+      summary: Récupérer un utilisateur
+      responses:
+        "200":
+          description: Soi-même ou MANAGER
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "403":
+          description: Autre CLIENT/EMPLOYEE
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    MovieId:
+      name: movieId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    ProjectionId:
+      name: projectionId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    RoomId:
+      name: roomId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    ReservationId:
+      name: reservationId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    UserId:
+      name: userId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    NotFound:
+      description: Introuvable
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+        message:
+          type: string
+
+    Genre:
+      type: string
+      enum: [THRILLER, ROMANCE, COMEDY, DRAMA, ACTION, SCI_FI, FANTASY, ANIMATION]
+
+    UserRole:
+      type: string
+      enum: [CLIENT, EMPLOYEE, MANAGER]
+
+    Movie:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        genre:
+          $ref: "#/components/schemas/Genre"
+        description:
+          type: string
+        duration:
+          type: string
+          example: PT2H15M
+      required: [id, title, genre, duration]
+
+    MovieInput:
+      type: object
+      properties:
+        title:
+          type: string
+        genre:
+          $ref: "#/components/schemas/Genre"
+        description:
+          type: string
+        duration:
+          type: string
+          example: PT2H15M
+      required: [title, genre, duration]
+
+    Room:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        number:
+          type: string
+        capacity:
+          type: integer
+      required: [id, number, capacity]
+
+    RoomInput:
+      type: object
+      properties:
+        number:
+          type: string
+        capacity:
+          type: integer
+      required: [number, capacity]
+
+    Seat:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        number:
+          type: string
+        roomId:
+          type: string
+          format: uuid
+      required: [id, number, roomId]
+
+    SeatInput:
+      type: object
+      properties:
+        number:
+          type: string
+      required: [number]
+
+    SeatAvailability:
+      allOf:
+        - $ref: "#/components/schemas/Seat"
+        - type: object
+          properties:
+            available:
+              type: boolean
+
+    Projection:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        datetime:
+          type: string
+          format: date-time
+        seatPrice:
+          type: number
+          format: double
+        movieId:
+          type: string
+          format: uuid
+        roomId:
+          type: string
+          format: uuid
+      required: [id, datetime, seatPrice, movieId, roomId]
+
+    ProjectionInput:
+      type: object
+      properties:
+        datetime:
+          type: string
+          format: date-time
+        seatPrice:
+          type: number
+          format: double
+        movieId:
+          type: string
+          format: uuid
+        roomId:
+          type: string
+          format: uuid
+      required: [datetime, seatPrice, movieId, roomId]
+
+    Reservation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+        userId:
+          type: string
+          format: uuid
+        projectionId:
+          type: string
+          format: uuid
+        seatId:
+          type: string
+          format: uuid
+      required: [id, createdAt, userId, projectionId, seatId]
+
+    ReservationInput:
+      type: object
+      properties:
+        projectionId:
+          type: string
+          format: uuid
+        seatId:
+          type: string
+          format: uuid
+      required: [projectionId, seatId]
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+        lastName:
+          type: string
+        birthdate:
+          type: string
+          format: date
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        role:
+          $ref: "#/components/schemas/UserRole"
+      required: [id, firstName, lastName, email, role]
