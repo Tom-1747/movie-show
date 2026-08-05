@@ -8,7 +8,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -53,6 +55,12 @@ public class User {
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   private UserRole role;
+
+  /** UML association User --take--> Seat (1). */
+  @OneToOne
+  @JoinColumn(name = "seat_id")
+  @JsonIgnore
+  private Seat seat;
 
   @OneToMany(mappedBy = "user")
   @JsonIgnore
