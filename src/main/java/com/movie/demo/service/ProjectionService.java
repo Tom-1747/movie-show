@@ -9,9 +9,13 @@ import com.movie.demo.endpoint.rest.model.ProjectionResponse;
 import com.movie.demo.endpoint.rest.model.SeatAvailabilityResponse;
 import com.movie.demo.repository.MovieRepository;
 import com.movie.demo.repository.ProjectionRepository;
+import com.movie.demo.repository.ReservationRepository;
+import com.movie.demo.repository.RoomRepository;
+import com.movie.demo.repository.SeatRepository;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,8 +26,9 @@ import org.springframework.web.server.ResponseStatusException;
 public class ProjectionService {
   private final ProjectionRepository projectionRepository;
   private final MovieRepository movieRepository;
-  private final RoomService roomService;
-  private final ReservationService reservationService;
+  private final RoomRepository roomRepository;
+  private final SeatRepository seatRepository;
+  private final ReservationRepository reservationRepository;
 
   public List<ProjectionResponse> list() {
     return projectionRepository.findAll().stream().map(this::toResponse).toList();
@@ -35,7 +40,7 @@ public class ProjectionService {
 
   public ProjectionResponse createOrUpdate(ProjectionRequest request) {
     Movie movie = findMovieOrThrow(request.movieId());
-    Room room = roomService.getById(request.roomId());
+    Room room = findRoomOrThrow(request.roomId());
 
     Projection projection =
         Projection.builder()
@@ -56,8 +61,8 @@ public class ProjectionService {
   public List<SeatAvailabilityResponse> getSeats(UUID projectionId) {
     Projection projection = findProjectionOrThrow(projectionId);
     UUID roomId = projection.getRoom().getId();
-    List<Seat> seats = roomService.getSeatsByRoomId(roomId);
-    Set<UUID> reservedSeatIds = reservationService.findReservedSeatIdsByProjectionId(projectionId);
+    List<Seat> seats = seatRepository.findByRoomId(roomId);
+    Set<UUID> reservedSeatIds = findReservedSeatIds(projectionId);
 
     return seats.stream()
         .map(
@@ -70,11 +75,25 @@ public class ProjectionService {
         .toList();
   }
 
+  private Set<UUID> findReservedSeatIds(UUID projectionId) {
+    return reservationRepository.findByProjectionId(projectionId).stream()
+        .flatMap(reservation -> reservation.getSeats().stream())
+        .map(Seat::getId)
+        .collect(Collectors.toSet());
+  }
+
   private Movie findMovieOrThrow(UUID movieId) {
     return movieRepository
         .findById(movieId)
         .orElseThrow(
             () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Movie not found: " + movieId));
+  }
+
+  private Room findRoomOrThrow(UUID roomId) {
+    return roomRepository
+        .findById(roomId)
+        .orElseThrow(
+            () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found: " + roomId));
   }
 
   private Projection findProjectionOrThrow(UUID projectionId) {
