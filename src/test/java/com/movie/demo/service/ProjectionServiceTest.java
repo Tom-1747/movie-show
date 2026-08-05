@@ -15,6 +15,7 @@ import com.movie.demo.domain.Seat;
 import com.movie.demo.endpoint.rest.model.ProjectionRequest;
 import com.movie.demo.endpoint.rest.model.ProjectionResponse;
 import com.movie.demo.endpoint.rest.model.SeatAvailabilityResponse;
+import com.movie.demo.repository.MovieRepository;
 import com.movie.demo.repository.ProjectionRepository;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -35,7 +36,7 @@ import org.springframework.web.server.ResponseStatusException;
 class ProjectionServiceTest {
 
   @Mock private ProjectionRepository projectionRepository;
-  @Mock private MovieService movieService;
+  @Mock private MovieRepository movieRepository;
   @Mock private RoomService roomService;
   @Mock private ReservationService reservationService;
 
@@ -70,10 +71,10 @@ class ProjectionServiceTest {
   }
 
   @Test
-  void createOrUpdate_usesCollaboratorMovieAndRoomServices() {
+  void createOrUpdate_usesMovieRepositoryAndRoomService() {
     Movie movie = Movie.builder().id(movieId).build();
     Room room = Room.builder().id(roomId).build();
-    when(movieService.getById(movieId)).thenReturn(movie);
+    when(movieRepository.findById(movieId)).thenReturn(Optional.of(movie));
     when(roomService.getById(roomId)).thenReturn(room);
     when(projectionRepository.save(any(Projection.class)))
         .thenAnswer(

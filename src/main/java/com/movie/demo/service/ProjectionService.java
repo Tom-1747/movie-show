@@ -7,6 +7,7 @@ import com.movie.demo.domain.Seat;
 import com.movie.demo.endpoint.rest.model.ProjectionRequest;
 import com.movie.demo.endpoint.rest.model.ProjectionResponse;
 import com.movie.demo.endpoint.rest.model.SeatAvailabilityResponse;
+import com.movie.demo.repository.MovieRepository;
 import com.movie.demo.repository.ProjectionRepository;
 import java.util.List;
 import java.util.Set;
@@ -20,7 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 @AllArgsConstructor
 public class ProjectionService {
   private final ProjectionRepository projectionRepository;
-  private final MovieService movieService;
+  private final MovieRepository movieRepository;
   private final RoomService roomService;
   private final ReservationService reservationService;
 
@@ -33,7 +34,7 @@ public class ProjectionService {
   }
 
   public ProjectionResponse createOrUpdate(ProjectionRequest request) {
-    Movie movie = movieService.getById(request.movieId());
+    Movie movie = findMovieOrThrow(request.movieId());
     Room room = roomService.getById(request.roomId());
 
     Projection projection =
@@ -67,6 +68,13 @@ public class ProjectionService {
                     roomId,
                     !reservedSeatIds.contains(seat.getId())))
         .toList();
+  }
+
+  private Movie findMovieOrThrow(UUID movieId) {
+    return movieRepository
+        .findById(movieId)
+        .orElseThrow(
+            () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Movie not found: " + movieId));
   }
 
   private Projection findProjectionOrThrow(UUID projectionId) {
