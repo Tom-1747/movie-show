@@ -10,17 +10,21 @@ import static org.mockito.Mockito.when;
 
 import com.movie.demo.domain.Movie;
 import com.movie.demo.domain.Projection;
+import com.movie.demo.domain.Reservation;
 import com.movie.demo.domain.Room;
 import com.movie.demo.domain.Seat;
 import com.movie.demo.endpoint.rest.model.ProjectionRequest;
 import com.movie.demo.endpoint.rest.model.ProjectionResponse;
 import com.movie.demo.endpoint.rest.model.SeatAvailabilityResponse;
+import com.movie.demo.repository.MovieRepository;
 import com.movie.demo.repository.ProjectionRepository;
+import com.movie.demo.repository.ReservationRepository;
+import com.movie.demo.repository.RoomRepository;
+import com.movie.demo.repository.SeatRepository;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,9 +39,10 @@ import org.springframework.web.server.ResponseStatusException;
 class ProjectionServiceTest {
 
   @Mock private ProjectionRepository projectionRepository;
-  @Mock private MovieService movieService;
-  @Mock private RoomService roomService;
-  @Mock private ReservationService reservationService;
+  @Mock private MovieRepository movieRepository;
+  @Mock private RoomRepository roomRepository;
+  @Mock private SeatRepository seatRepository;
+  @Mock private ReservationRepository reservationRepository;
 
   @InjectMocks private ProjectionService projectionService;
 
@@ -70,11 +75,11 @@ class ProjectionServiceTest {
   }
 
   @Test
-  void createOrUpdate_usesCollaboratorMovieAndRoomServices() {
+  void createOrUpdate_usesMovieAndRoomRepositories() {
     Movie movie = Movie.builder().id(movieId).build();
     Room room = Room.builder().id(roomId).build();
-    when(movieService.getById(movieId)).thenReturn(movie);
-    when(roomService.getById(roomId)).thenReturn(room);
+    when(movieRepository.findById(movieId)).thenReturn(Optional.of(movie));
+    when(roomRepository.findById(roomId)).thenReturn(Optional.of(room));
     when(projectionRepository.save(any(Projection.class)))
         .thenAnswer(
             invocation -> {
@@ -107,25 +112,22 @@ class ProjectionServiceTest {
 
   @Test
   void getSeats_marksReservedSeatsUnavailable() {
+    UUID freeSeatId = UUID.fromString("55555555-5555-5555-5555-555555555555");
+    Seat reservedSeat = Seat.builder().id(seatId).number("A1").build();
+    Seat freeSeat = Seat.builder().id(freeSeatId).number("A2").build();
+
     when(projectionRepository.findById(projectionId)).thenReturn(Optional.of(sampleProjection()));
-    when(roomService.getSeatsByRoomId(roomId))
-        .thenReturn(
-            List.of(
-                Seat.builder().id(seatId).number("A1").build(),
-                Seat.builder()
-                    .id(UUID.fromString("55555555-5555-5555-5555-555555555555"))
-                    .number("A2")
-                    .build()));
-    when(reservationService.findReservedSeatIdsByProjectionId(projectionId))
-        .thenReturn(Set.of(seatId));
+    when(seatRepository.findByRoomId(roomId)).thenReturn(List.of(reservedSeat, freeSeat));
+    when(reservationRepository.findByProjectionId(projectionId))
+        .thenReturn(List.of(Reservation.builder().seats(List.of(reservedSeat)).build()));
 
     List<SeatAvailabilityResponse> seats = projectionService.getSeats(projectionId);
 
     assertEquals(2, seats.size());
     assertFalse(seats.get(0).available());
     assertTrue(seats.get(1).available());
-    verify(reservationService).findReservedSeatIdsByProjectionId(projectionId);
-    verify(roomService).getSeatsByRoomId(roomId);
+    verify(reservationRepository).findByProjectionId(projectionId);
+    verify(seatRepository).findByRoomId(roomId);
   }
 
   private Projection sampleProjection() {
